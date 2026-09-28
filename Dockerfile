@@ -29,7 +29,8 @@ COPY . .
 # available at build time (pass them as build args / build-time env vars).
 ARG DATABASE_URL
 ARG PAYLOAD_SECRET
-ARG NEXT_PUBLIC_SERVER_URL
+# Public, inlined at build time — Cranl does not pass env vars to the build stage
+ARG NEXT_PUBLIC_SERVER_URL=https://basil-blogs-ldlqgp.cranl.net
 ENV DATABASE_URL=$DATABASE_URL
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL

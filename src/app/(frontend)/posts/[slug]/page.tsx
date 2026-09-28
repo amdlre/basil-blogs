@@ -1,3 +1,4 @@
+import { hasPayloadEnv } from '@/utilities/hasPayloadEnv'
 import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
@@ -16,6 +17,8 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export async function generateStaticParams() {
+  if (!hasPayloadEnv) return []
+
   const payload = await getPayload({ config: configPromise })
   const posts = await payload.find({
     collection: 'posts',

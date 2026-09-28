@@ -12,11 +12,16 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
+import { connection } from 'next/server'
+import { hasPayloadEnv } from '@/utilities/hasPayloadEnv'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Built without DB access: render every page on request instead of at build time
+  if (!hasPayloadEnv) await connection()
+
   const { isEnabled } = await draftMode()
 
   return (
