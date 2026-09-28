@@ -6,6 +6,10 @@ import { slugField } from 'payload'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+  labels: {
+    singular: { ar: 'تصنيف', en: 'Category' },
+    plural: { ar: 'التصنيفات', en: 'Categories' },
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -19,6 +23,8 @@ export const Categories: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
+      label: { ar: 'العنوان', en: 'Title' },
+      localized: true,
       required: true,
     },
     slugField({

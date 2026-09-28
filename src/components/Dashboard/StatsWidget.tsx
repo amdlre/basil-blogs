@@ -2,6 +2,8 @@ import type { CollectionSlug, WidgetServerProps, Where } from 'payload'
 
 import React from 'react'
 
+import { adminT, type AdminTranslationKey } from '@/i18n/admin'
+
 import { Icon, type IconName } from './Icon'
 import { formatNumber } from './utils'
 import './index.scss'
@@ -10,9 +12,9 @@ type Stat = {
   accent: string
   collection: CollectionSlug
   icon: IconName
-  label: string
+  label: AdminTranslationKey
   /** Optional second count shown under the total, e.g. drafts */
-  detail?: { label: string; where: Where }
+  detail?: { label: AdminTranslationKey; where: Where }
 }
 
 const stats: Stat[] = [
@@ -21,23 +23,23 @@ const stats: Stat[] = [
     collection: 'posts',
     detail: { label: 'drafts', where: { _status: { equals: 'draft' } } },
     icon: 'posts',
-    label: 'Posts',
+    label: 'statPosts',
   },
   {
     accent: 'blue',
     collection: 'pages',
     detail: { label: 'drafts', where: { _status: { equals: 'draft' } } },
     icon: 'pages',
-    label: 'Pages',
+    label: 'statPages',
   },
-  { accent: 'amber', collection: 'media', icon: 'media', label: 'Media files' },
-  { accent: 'green', collection: 'categories', icon: 'categories', label: 'Categories' },
-  { accent: 'pink', collection: 'form-submissions', icon: 'inbox', label: 'Form submissions' },
-  { accent: 'slate', collection: 'users', icon: 'users', label: 'Users' },
+  { accent: 'amber', collection: 'media', icon: 'media', label: 'statMedia' },
+  { accent: 'green', collection: 'categories', icon: 'categories', label: 'statCategories' },
+  { accent: 'pink', collection: 'form-submissions', icon: 'inbox', label: 'statSubmissions' },
+  { accent: 'slate', collection: 'users', icon: 'users', label: 'statUsers' },
 ]
 
 export const StatsWidget: React.FC<WidgetServerProps> = async ({ req }) => {
-  const { payload } = req
+  const { i18n, payload } = req
   const adminRoute = payload.config.routes.admin
 
   const results = await Promise.all(
@@ -72,17 +74,19 @@ export const StatsWidget: React.FC<WidgetServerProps> = async ({ req }) => {
               <Icon name={stat.icon} size={22} />
             </span>
             <span className="dash-stat__body">
-              <span className="dash-stat__label">{stat.label}</span>
-              <span className="dash-stat__value">{formatNumber(stat.total ?? 0)}</span>
+              <span className="dash-stat__label">{adminT(i18n, stat.label)}</span>
+              <span className="dash-stat__value">
+                {formatNumber(stat.total ?? 0, i18n.language)}
+              </span>
               {stat.detail && stat.detailCount !== null && (
                 <span className="dash-stat__detail">
                   <span className="dash-stat__dot" />
-                  {formatNumber(stat.detailCount)} {stat.detail.label}
+                  {formatNumber(stat.detailCount, i18n.language)} {adminT(i18n, stat.detail.label)}
                 </span>
               )}
             </span>
             <span className="dash-stat__arrow">
-              <Icon name="arrowRight" size={16} />
+              <Icon className="dash-icon-flip" name="arrowRight" size={16} />
             </span>
           </a>
         ))}

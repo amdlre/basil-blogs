@@ -10,6 +10,11 @@
 
 // ---------- Shared ----------
 
+// Directional icons (arrows) point the other way in right-to-left languages
+[dir='rtl'] .dash-icon-flip {
+  transform: scaleX(-1);
+}
+
 .dash-btn {
   display: inline-flex;
   align-items: center;
@@ -126,7 +131,7 @@
     content: '';
     position: absolute;
     top: -40px;
-    right: -40px;
+    inset-inline-end: -40px;
     width: 120px;
     height: 120px;
     border-radius: 50%;
@@ -197,7 +202,7 @@
 
   &__arrow {
     position: absolute;
-    right: 1rem;
+    inset-inline-end: 1rem;
     bottom: 1rem;
     color: var(--accent);
     opacity: 0;

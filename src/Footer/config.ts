@@ -5,6 +5,7 @@ import { revalidateFooter } from './hooks/revalidateFooter'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
+  label: { ar: 'التذييل', en: 'Footer' },
   access: {
     read: () => true,
   },
@@ -12,6 +13,9 @@ export const Footer: GlobalConfig = {
     {
       name: 'navItems',
       type: 'array',
+      label: { ar: 'روابط القائمة', en: 'Nav items' },
+      // Each language has its own menu (labels and links)
+      localized: true,
       fields: [
         link({
           appearances: false,

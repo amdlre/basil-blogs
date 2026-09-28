@@ -13,9 +13,11 @@ import type { Theme } from './types'
 
 import { useTheme } from '..'
 import { themeLocalStorageKey } from './types'
+import { useDictionary } from '@/i18n/LocaleProvider'
 
 export const ThemeSelector: React.FC = () => {
   const { setTheme } = useTheme()
+  const { theme: t } = useDictionary()
   const [value, setValue] = useState('')
 
   const onThemeChange = (themeToSet: Theme & 'auto') => {
@@ -36,15 +38,15 @@ export const ThemeSelector: React.FC = () => {
   return (
     <Select onValueChange={onThemeChange} value={value}>
       <SelectTrigger
-        aria-label="Select a theme"
-        className="w-auto bg-transparent gap-2 pl-0 md:pl-3 border-none"
+        aria-label={t.select}
+        className="w-auto bg-transparent gap-2 ps-0 md:ps-3 border-none"
       >
-        <SelectValue placeholder="Theme" />
+        <SelectValue placeholder={t.placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="auto">Auto</SelectItem>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
+        <SelectItem value="auto">{t.auto}</SelectItem>
+        <SelectItem value="light">{t.light}</SelectItem>
+        <SelectItem value="dark">{t.dark}</SelectItem>
       </SelectContent>
     </Select>
   )

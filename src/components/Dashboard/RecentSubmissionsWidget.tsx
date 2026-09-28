@@ -2,12 +2,14 @@ import type { WidgetServerProps } from 'payload'
 
 import React from 'react'
 
+import { adminT } from '@/i18n/admin'
+
 import { Icon } from './Icon'
 import { timeAgo } from './utils'
 import './index.scss'
 
 export const RecentSubmissionsWidget: React.FC<WidgetServerProps> = async ({ req }) => {
-  const { payload } = req
+  const { i18n, payload } = req
   const adminRoute = payload.config.routes.admin
 
   const submissions = await payload
@@ -28,11 +30,11 @@ export const RecentSubmissionsWidget: React.FC<WidgetServerProps> = async ({ req
           <span className="dash-panel__icon dash-stat--pink">
             <Icon name="inbox" size={16} />
           </span>
-          Latest form submissions
+          {adminT(i18n, 'latestSubmissions')}
         </span>
         <a className="dash-panel__link" href={`${adminRoute}/collections/form-submissions`}>
-          View all
-          <Icon name="arrowRight" size={14} />
+          {adminT(i18n, 'viewAll')}
+          <Icon className="dash-icon-flip" name="arrowRight" size={14} />
         </a>
       </header>
 
@@ -40,7 +42,8 @@ export const RecentSubmissionsWidget: React.FC<WidgetServerProps> = async ({ req
         <ul className="dash-list">
           {submissions.docs.map((submission) => {
             const formTitle =
-              typeof submission.form === 'object' ? submission.form?.title : 'Form submission'
+              (typeof submission.form === 'object' && submission.form?.title) ||
+              adminT(i18n, 'formSubmission')
             // Show the first submitted value (usually a name or email) as a preview
             const preview = submission.submissionData?.find((field) => field.value)?.value
 
@@ -53,10 +56,11 @@ export const RecentSubmissionsWidget: React.FC<WidgetServerProps> = async ({ req
                   <span className="dash-list__main">
                     <span className="dash-list__title">{preview || formTitle}</span>
                     <span className="dash-list__meta">
-                      {formTitle} · {timeAgo(submission.createdAt)}
+                      {formTitle} ·{' '}
+                      {timeAgo(submission.createdAt, i18n.language, adminT(i18n, 'justNow'))}
                     </span>
                   </span>
-                  <Icon className="dash-list__chevron" name="arrowRight" size={16} />
+                  <Icon className="dash-list__chevron dash-icon-flip" name="arrowRight" size={16} />
                 </a>
               </li>
             )
@@ -64,7 +68,7 @@ export const RecentSubmissionsWidget: React.FC<WidgetServerProps> = async ({ req
         </ul>
       ) : (
         <div className="dash-empty">
-          <p>No submissions yet. They&apos;ll show up here when visitors fill in your forms.</p>
+          <p>{adminT(i18n, 'noSubmissions')}</p>
         </div>
       )}
     </section>

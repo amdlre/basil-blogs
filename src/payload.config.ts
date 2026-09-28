@@ -1,4 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { ar } from '@payloadcms/translations/languages/ar'
+import { en } from '@payloadcms/translations/languages/en'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -15,6 +17,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { migrations } from './migrations'
+import { adminTranslations } from './i18n/admin'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -25,31 +28,33 @@ export default buildConfig({
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
+      // Globe button in the header that switches the admin UI language
+      actions: ['@/components/AdminLanguageToggle#AdminLanguageToggle'],
     },
     dashboard: {
       widgets: [
         {
           slug: 'welcome',
           Component: '@/components/Dashboard/WelcomeWidget#WelcomeWidget',
-          label: 'Welcome',
+          label: { ar: 'الترحيب', en: 'Welcome' },
           minWidth: 'medium',
         },
         {
           slug: 'stats',
           Component: '@/components/Dashboard/StatsWidget#StatsWidget',
-          label: 'Statistics',
+          label: { ar: 'الإحصائيات', en: 'Statistics' },
           minWidth: 'medium',
         },
         {
           slug: 'recent-posts',
           Component: '@/components/Dashboard/RecentPostsWidget#RecentPostsWidget',
-          label: 'Recent posts',
+          label: { ar: 'أحدث المقالات', en: 'Recent posts' },
           minWidth: 'small',
         },
         {
           slug: 'recent-submissions',
           Component: '@/components/Dashboard/RecentSubmissionsWidget#RecentSubmissionsWidget',
-          label: 'Latest form submissions',
+          label: { ar: 'أحدث ردود النماذج', en: 'Latest form submissions' },
           minWidth: 'small',
         },
       ],
@@ -98,6 +103,22 @@ export default buildConfig({
     // Run pending migrations automatically when the production server starts
     prodMigrations: migrations,
   }),
+  // Admin UI language (labels, buttons…). Arabic is the default; switch from the header toggle.
+  i18n: {
+    fallbackLanguage: 'ar',
+    supportedLanguages: { ar, en },
+    translations: adminTranslations,
+  },
+  // Content language: fields marked `localized: true` store one value per locale
+  localization: {
+    locales: [
+      // Each language falls back to the other while a translation is missing
+      { code: 'ar', fallbackLocale: 'en', label: { ar: 'العربية', en: 'Arabic' }, rtl: true },
+      { code: 'en', fallbackLocale: 'ar', label: { ar: 'الإنجليزية', en: 'English' } },
+    ],
+    defaultLocale: 'ar',
+    fallback: true,
+  },
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],

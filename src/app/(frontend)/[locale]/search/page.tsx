@@ -7,13 +7,20 @@ import React from 'react'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
 import { CardPostData } from '@/components/Card'
+import { defaultLocale, isLocale } from '@/i18n/config'
+import { getDictionary } from '@/i18n/dictionaries'
+import { localeAlternates } from '@/utilities/generateMeta'
 
 type Args = {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{
     q: string
   }>
 }
-export default async function Page({ searchParams: searchParamsPromise }: Args) {
+export default async function Page({ params, searchParams: searchParamsPromise }: Args) {
+  const { locale: localeParam } = await params
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
+  const t = getDictionary(locale)
   const { q: query } = await searchParamsPromise
   const payload = await getPayload({ config: configPromise })
 
@@ -21,6 +28,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     collection: 'search',
     depth: 1,
     limit: 12,
+    locale,
     select: {
       title: true,
       slug: true,
@@ -64,7 +72,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none text-center">
-          <h1 className="mb-8 lg:mb-16">Search</h1>
+          <h1 className="mb-8 lg:mb-16">{t.search.title}</h1>
 
           <div className="max-w-[50rem] mx-auto">
             <Search />
@@ -75,14 +83,19 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       {posts.totalDocs > 0 ? (
         <CollectionArchive posts={posts.docs as CardPostData[]} />
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">{t.search.noResults}</div>
       )}
     </div>
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
+  const t = getDictionary(locale)
+
   return {
-    title: `Payload Website Template Search`,
+    alternates: localeAlternates(locale, '/search'),
+    title: `${t.search.title} | ${t.siteName}`,
   }
 }

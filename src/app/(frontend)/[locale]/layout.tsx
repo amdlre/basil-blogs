@@ -1,0 +1,90 @@
+import type { Metadata } from 'next'
+
+import { cn } from '@/utilities/ui'
+import { GeistMono } from 'geist/font/mono'
+import { GeistSans } from 'geist/font/sans'
+import { IBM_Plex_Sans_Arabic } from 'next/font/google'
+import React from 'react'
+
+import { AdminBar } from '@/components/AdminBar'
+import { Footer } from '@/Footer/Component'
+import { Header } from '@/Header/Component'
+import { getDirection, isLocale, locales } from '@/i18n/config'
+import { LocaleProvider } from '@/i18n/LocaleProvider'
+import { Providers } from '@/providers'
+import { InitTheme } from '@/providers/Theme/InitTheme'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { connection } from 'next/server'
+import { hasPayloadEnv } from '@/utilities/hasPayloadEnv'
+
+import '../globals.css'
+import { getServerSideURL } from '@/utilities/getURL'
+
+// Geist has no Arabic glyphs; the browser falls back to this font for Arabic text
+const arabicFont = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic'],
+  variable: '--font-arabic',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
+
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  if (!isLocale(locale)) notFound()
+
+  // Built without DB access: render every page on request instead of at build time
+  if (!hasPayloadEnv) await connection()
+
+  const { isEnabled } = await draftMode()
+
+  return (
+    <html
+      className={cn(GeistSans.variable, GeistMono.variable, arabicFont.variable)}
+      dir={getDirection(locale)}
+      lang={locale}
+      suppressHydrationWarning
+    >
+      <head>
+        <InitTheme />
+        <link href="/favicon.ico" rel="icon" sizes="32x32" />
+        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+      </head>
+      <body>
+        <LocaleProvider locale={locale}>
+          <Providers>
+            <AdminBar
+              adminBarProps={{
+                preview: isEnabled,
+              }}
+            />
+
+            <Header locale={locale} />
+            {children}
+            <Footer locale={locale} />
+          </Providers>
+        </LocaleProvider>
+      </body>
+    </html>
+  )
+}
+
+export const metadata: Metadata = {
+  metadataBase: new URL(getServerSideURL()),
+  openGraph: mergeOpenGraph(),
+  twitter: {
+    card: 'summary_large_image',
+    creator: '@payloadcms',
+  },
+}

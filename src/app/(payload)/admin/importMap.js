@@ -24,6 +24,7 @@ import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from 
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
 import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
+import { AdminLanguageToggle as AdminLanguageToggle_b5e01b4e1def0f7b8525b34743abd7ca } from '@/components/AdminLanguageToggle'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { WelcomeWidget as WelcomeWidget_6449e2b4cdf0ca2e538fca7f21b72444 } from '@/components/Dashboard/WelcomeWidget'
 import { StatsWidget as StatsWidget_89d620f910f30a15731181879546e90b } from '@/components/Dashboard/StatsWidget'
@@ -59,6 +60,7 @@ export const importMap = {
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
+  "@/components/AdminLanguageToggle#AdminLanguageToggle": AdminLanguageToggle_b5e01b4e1def0f7b8525b34743abd7ca,
   "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
   "@/components/Dashboard/WelcomeWidget#WelcomeWidget": WelcomeWidget_6449e2b4cdf0ca2e538fca7f21b72444,
   "@/components/Dashboard/StatsWidget#StatsWidget": StatsWidget_89d620f910f30a15731181879546e90b,

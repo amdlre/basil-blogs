@@ -1,7 +1,7 @@
 // Bulk selection actions (Edit / Publish / Unpublish / Delete / Restore)
 // shown above every collection list and folder view once rows are selected.
 // Edit, Publish and Unpublish have no class of their own in Payload, so they
-// are matched by aria-label (English admin UI).
+// are matched by aria-label (English and Arabic admin UI).
 
 $icon-edit: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.4 3.6a2.1 2.1 0 0 1 3 3L7.4 18.6a2 2 0 0 1-.9.5l-2.9.8.8-2.9a2 2 0 0 1 .5-.9z'/></svg>");
 $icon-publish: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><polyline points='17 8 12 3 7 8'/><line x1='12' y1='3' x2='12' y2='15'/></svg>");
@@ -59,6 +59,7 @@ $icon-select-all: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
   }
 
   // Edit — blue
+  &[aria-label='تعديل'],
   &[aria-label='Edit'] {
     --action-icon: #{$icon-edit};
     --action-color: var(--color-blue-600);
@@ -66,6 +67,7 @@ $icon-select-all: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
   }
 
   // Publish — green
+  &[aria-label='نشر'],
   &[aria-label='Publish'] {
     --action-icon: #{$icon-publish};
     --action-color: var(--theme-success-750);
@@ -73,6 +75,7 @@ $icon-select-all: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
   }
 
   // Unpublish — amber
+  &[aria-label='الغاء النّشر'],
   &[aria-label='Unpublish'] {
     --action-icon: #{$icon-unpublish};
     --action-color: var(--theme-warning-750);
@@ -94,15 +97,20 @@ $icon-select-all: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
   }
 
   // "Select all (n)" — neutral
+  &[aria-label^='تحديد كل'],
   &[aria-label^='Select all'] {
     --action-icon: #{$icon-select-all};
   }
 
+  &[aria-label='تعديل'],
   &[aria-label='Edit'],
+  &[aria-label='نشر'],
   &[aria-label='Publish'],
+  &[aria-label='الغاء النّشر'],
   &[aria-label='Unpublish'],
   &.delete-documents__toggle,
   &.restore-documents__toggle,
+  &[aria-label^='تحديد كل'],
   &[aria-label^='Select all'] {
     &::before {
       display: inline-block;
@@ -112,17 +120,20 @@ $icon-select-all: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
 
 // Dark theme: tinted backgrounds with lighter text
 html[data-theme='dark'] .list-selection__button {
+  &[aria-label='تعديل'],
   &[aria-label='Edit'] {
     --action-color: var(--color-blue-300);
     --action-bg: color-mix(in srgb, var(--color-blue-500) 18%, transparent);
   }
 
+  &[aria-label='نشر'],
   &[aria-label='Publish'],
   &.restore-documents__toggle {
     --action-color: var(--color-success-300);
     --action-bg: color-mix(in srgb, var(--color-success-500) 18%, transparent);
   }
 
+  &[aria-label='الغاء النّشر'],
   &[aria-label='Unpublish'] {
     --action-color: var(--color-warning-300);
     --action-bg: color-mix(in srgb, var(--color-warning-500) 18%, transparent);

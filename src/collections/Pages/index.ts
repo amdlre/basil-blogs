@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, UploadField } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
@@ -12,6 +12,7 @@ import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
+import { localizedUpload } from '../../fields/localizedUpload'
 
 import {
   MetaDescriptionField,
@@ -23,6 +24,10 @@ import {
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
+  labels: {
+    singular: { ar: 'صفحة', en: 'Page' },
+    plural: { ar: 'الصفحات', en: 'Pages' },
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -58,6 +63,8 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'title',
       type: 'text',
+      label: { ar: 'العنوان', en: 'Title' },
+      localized: true,
       required: true,
     },
     {
@@ -65,13 +72,16 @@ export const Pages: CollectionConfig<'pages'> = {
       tabs: [
         {
           fields: [hero],
-          label: 'Hero',
+          label: { ar: 'الواجهة', en: 'Hero' },
         },
         {
           fields: [
             {
               name: 'layout',
               type: 'blocks',
+              label: { ar: 'تخطيط الصفحة', en: 'Layout' },
+              // Each language has its own set of blocks
+              localized: true,
               blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
               required: true,
               admin: {
@@ -79,25 +89,24 @@ export const Pages: CollectionConfig<'pages'> = {
               },
             },
           ],
-          label: 'Content',
+          label: { ar: 'المحتوى', en: 'Content' },
         },
         {
           name: 'meta',
-          label: 'SEO',
+          label: { ar: 'تحسين محركات البحث', en: 'SEO' },
           fields: [
             OverviewField({
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
               imagePath: 'meta.image',
             }),
-            MetaTitleField({
-              hasGenerateFn: true,
+            { ...MetaTitleField({ hasGenerateFn: true }), localized: true },
+            // The SEO plugin localizes this by default; keep it shared and let the toggle opt in per language
+            ...localizedUpload({
+              ...(MetaImageField({ relationTo: 'media' }) as UploadField),
+              localized: false,
             }),
-            MetaImageField({
-              relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
+            { ...MetaDescriptionField({}), localized: true },
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,
@@ -113,6 +122,7 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: { ar: 'تاريخ النشر', en: 'Published at' },
       admin: {
         position: 'sidebar',
       },

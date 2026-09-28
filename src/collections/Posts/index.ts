@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, UploadField } from 'payload'
 
 import {
   BlocksFeature,
@@ -17,6 +17,7 @@ import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { localizedUpload } from '../../fields/localizedUpload'
 
 import {
   MetaDescriptionField,
@@ -29,6 +30,10 @@ import { slugField } from 'payload'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
+  labels: {
+    singular: { ar: 'مقال', en: 'Post' },
+    plural: { ar: 'المقالات', en: 'Posts' },
+  },
   access: {
     create: authenticated,
     delete: authenticated,
@@ -69,6 +74,8 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'title',
       type: 'text',
+      label: { ar: 'العنوان', en: 'Title' },
+      localized: true,
       required: true,
     },
     {
@@ -76,11 +83,12 @@ export const Posts: CollectionConfig<'posts'> = {
       tabs: [
         {
           fields: [
-            {
+            ...localizedUpload({
               name: 'heroImage',
               type: 'upload',
+              label: { ar: 'الصورة الرئيسية', en: 'Hero image' },
               relationTo: 'media',
-            },
+            }),
             {
               name: 'content',
               type: 'richText',
@@ -97,10 +105,11 @@ export const Posts: CollectionConfig<'posts'> = {
                 },
               }),
               label: false,
+              localized: true,
               required: true,
             },
           ],
-          label: 'Content',
+          label: { ar: 'المحتوى', en: 'Content' },
         },
         {
           fields: [
@@ -118,6 +127,7 @@ export const Posts: CollectionConfig<'posts'> = {
                 }
               },
               hasMany: true,
+              label: { ar: 'مقالات ذات صلة', en: 'Related posts' },
               relationTo: 'posts',
             },
             {
@@ -127,28 +137,28 @@ export const Posts: CollectionConfig<'posts'> = {
                 position: 'sidebar',
               },
               hasMany: true,
+              label: { ar: 'التصنيفات', en: 'Categories' },
               relationTo: 'categories',
             },
           ],
-          label: 'Meta',
+          label: { ar: 'البيانات', en: 'Meta' },
         },
         {
           name: 'meta',
-          label: 'SEO',
+          label: { ar: 'تحسين محركات البحث', en: 'SEO' },
           fields: [
             OverviewField({
               titlePath: 'meta.title',
               descriptionPath: 'meta.description',
               imagePath: 'meta.image',
             }),
-            MetaTitleField({
-              hasGenerateFn: true,
+            { ...MetaTitleField({ hasGenerateFn: true }), localized: true },
+            // The SEO plugin localizes this by default; keep it shared and let the toggle opt in per language
+            ...localizedUpload({
+              ...(MetaImageField({ relationTo: 'media' }) as UploadField),
+              localized: false,
             }),
-            MetaImageField({
-              relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
+            { ...MetaDescriptionField({}), localized: true },
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,
@@ -164,6 +174,7 @@ export const Posts: CollectionConfig<'posts'> = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: { ar: 'تاريخ النشر', en: 'Published at' },
       admin: {
         date: {
           pickerAppearance: 'dayAndTime',
@@ -188,6 +199,7 @@ export const Posts: CollectionConfig<'posts'> = {
         position: 'sidebar',
       },
       hasMany: true,
+      label: { ar: 'الكتّاب', en: 'Authors' },
       relationTo: 'users',
     },
     // This field is only used to populate the user data via the `populateAuthors` hook

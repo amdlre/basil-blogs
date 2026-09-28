@@ -1,5 +1,10 @@
 import { BeforeSync, DocToSync } from '@payloadcms/plugin-search/types'
 
+import { resolveLocalizedUpload } from '@/utilities/resolveLocalizedUpload'
+
+const toID = (value: unknown) =>
+  value && typeof value === 'object' && 'id' in value ? (value as { id: unknown }).id : value
+
 export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searchDoc }) => {
   const {
     doc: { relationTo: collection },
@@ -11,9 +16,9 @@ export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searc
     ...searchDoc,
     slug,
     meta: {
-      ...meta,
       title: meta?.title || title,
-      image: meta?.image?.id || meta?.image || originalDoc.heroImage?.id || originalDoc.heroImage,
+      // Prefer the SEO image, fall back to the hero image (each may differ per language)
+      image: toID(resolveLocalizedUpload(meta, 'image')) || toID(resolveLocalizedUpload(originalDoc, 'heroImage')),
       description: meta?.description,
     },
     categories: [],
@@ -36,6 +41,8 @@ export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searc
         id: category,
         disableErrors: true,
         depth: 0,
+        // Category titles in the language being synced
+        locale: req.locale ?? undefined,
         select: { title: true },
         req,
       })

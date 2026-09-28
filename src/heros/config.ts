@@ -1,5 +1,7 @@
 import type { Field } from 'payload'
 
+import { localizedUpload } from '@/fields/localizedUpload'
+
 import {
   FixedToolbarFeature,
   HeadingFeature,
@@ -17,22 +19,22 @@ export const hero: Field = {
       name: 'type',
       type: 'select',
       defaultValue: 'lowImpact',
-      label: 'Type',
+      label: { ar: 'النوع', en: 'Type' },
       options: [
         {
-          label: 'None',
+          label: { ar: 'بدون', en: 'None' },
           value: 'none',
         },
         {
-          label: 'High Impact',
+          label: { ar: 'تأثير عالٍ', en: 'High Impact' },
           value: 'highImpact',
         },
         {
-          label: 'Medium Impact',
+          label: { ar: 'تأثير متوسط', en: 'Medium Impact' },
           value: 'mediumImpact',
         },
         {
-          label: 'Low Impact',
+          label: { ar: 'تأثير منخفض', en: 'Low Impact' },
           value: 'lowImpact',
         },
       ],
@@ -52,21 +54,24 @@ export const hero: Field = {
         },
       }),
       label: false,
+      localized: true,
     },
     linkGroup({
       overrides: {
+        localized: true,
         maxRows: 2,
       },
     }),
-    {
+    ...localizedUpload({
       name: 'media',
       type: 'upload',
       admin: {
         condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
       },
+      label: { ar: 'الصورة', en: 'Media' },
       relationTo: 'media',
       required: true,
-    },
+    }),
   ],
   label: false,
 }

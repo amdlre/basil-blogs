@@ -1,21 +1,18 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
-import Link from 'next/link'
+import Link from '@/i18n/Link'
 import React from 'react'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { intlLocale } from '@/i18n/config'
+import { useDictionary, useLocale } from '@/i18n/LocaleProvider'
+import { resolveLocalizedUpload } from '@/utilities/resolveLocalizedUpload'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'> &
-  Partial<Pick<Post, 'heroImage' | 'publishedAt'>>
-
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-})
+  Partial<Pick<Post, 'heroImage' | 'heroImageLocalized' | 'heroImagePerLocale' | 'publishedAt'>>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -26,13 +23,17 @@ export const Card: React.FC<{
   title?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
+  const locale = useLocale()
+  const { posts: t } = useDictionary()
   const { className, doc, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, heroImage, meta, publishedAt, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, publishedAt, title } = doc || {}
+  const { description } = meta || {}
 
-  // Prefer the SEO image, fall back to the post's hero image
-  const image = [metaImage, heroImage].find((img) => img && typeof img === 'object')
+  // Prefer the SEO image, fall back to the post's hero image (each may differ per language)
+  const image = [resolveLocalizedUpload(meta, 'image'), resolveLocalizedUpload(doc, 'heroImage')].find(
+    (img) => img && typeof img === 'object',
+  )
 
   const categoryTitles = (categories || [])
     .map((category) => (typeof category === 'object' ? category?.title : null))
@@ -79,10 +80,10 @@ export const Card: React.FC<{
 
         <span
           aria-hidden
-          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-md transition-colors group-hover:bg-white group-hover:text-neutral-900"
+          className="absolute end-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-md transition-colors group-hover:bg-white group-hover:text-neutral-900"
         >
           <svg
-            className="h-5 w-5"
+            className="h-5 w-5 rtl:-scale-x-100"
             fill="none"
             stroke="currentColor"
             strokeLinecap="round"
@@ -125,9 +126,13 @@ export const Card: React.FC<{
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           {publishedAt ? (
             <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Published</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">{t.published}</p>
               <time className="text-lg font-bold" dateTime={publishedAt}>
-                {dateFormatter.format(new Date(publishedAt))}
+                {new Date(publishedAt).toLocaleDateString(intlLocale[locale], {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
               </time>
             </div>
           ) : (
@@ -135,7 +140,7 @@ export const Card: React.FC<{
           )}
 
           <span className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity group-hover:opacity-90">
-            Read more
+            {t.readMore}
           </span>
         </div>
       </div>

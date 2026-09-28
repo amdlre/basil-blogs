@@ -12,21 +12,30 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { defaultLocale, isLocale } from '@/i18n/config'
+import { getDictionary } from '@/i18n/dictionaries'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+const generateTitle: GenerateTitle<Post | Page> = ({ doc, locale }) => {
+  const { siteName } = getDictionary(isLocale(locale) ? locale : defaultLocale)
+
+  return doc?.title ? `${doc.title} | ${siteName}` : siteName
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<Post | Page> = ({ collectionConfig, doc, locale }) => {
+  const url = `${getServerSideURL()}/${isLocale(locale) ? locale : defaultLocale}`
+  const prefix = collectionConfig?.slug === 'posts' ? '/posts' : ''
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  return doc?.slug ? `${url}${prefix}/${doc.slug}` : url
 }
 
 export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
+      labels: {
+        singular: { ar: 'تحويل', en: 'Redirect' },
+        plural: { ar: 'التحويلات', en: 'Redirects' },
+      },
       // @ts-expect-error - This is a valid override, mapped fields don't resolve to the same type
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
@@ -59,6 +68,10 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      labels: {
+        singular: { ar: 'نموذج', en: 'Form' },
+        plural: { ar: 'النماذج', en: 'Forms' },
+      },
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
           if ('name' in field && field.name === 'confirmationMessage') {
@@ -79,11 +92,23 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    formSubmissionOverrides: {
+      labels: {
+        singular: { ar: 'رد نموذج', en: 'Form Submission' },
+        plural: { ar: 'ردود النماذج', en: 'Form Submissions' },
+      },
+    },
   }),
   searchPlugin({
     collections: ['posts'],
+    // One search entry per language
+    localize: true,
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
+      labels: {
+        singular: { ar: 'نتيجة بحث', en: 'Search Result' },
+        plural: { ar: 'نتائج البحث', en: 'Search Results' },
+      },
       fields: ({ defaultFields }) => {
         return [...defaultFields, ...searchFields]
       },

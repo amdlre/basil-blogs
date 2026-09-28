@@ -13,6 +13,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { defaultLocale, isLocale, locales, type Locale } from '@/i18n/config'
 
 export async function generateStaticParams() {
   if (!hasPayloadEnv) return []
@@ -29,32 +30,29 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
+  const slugs = pages.docs?.filter((doc) => doc.slug !== 'home').map(({ slug }) => slug) ?? []
 
-  return params
+  return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
 
 type Args = {
   params: Promise<{
+    locale: string
     slug?: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
+  const { locale: localeParam, slug = 'home' } = await paramsPromise
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/' + decodedSlug
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
   page = await queryPageBySlug({
+    locale,
     slug: decodedSlug,
   })
 
@@ -64,7 +62,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   if (!page) {
-    return <PayloadRedirects url={url} />
+    return <PayloadRedirects locale={locale} url={url} />
   }
 
   const { hero, layout } = page
@@ -73,28 +71,30 @@ export default async function Page({ params: paramsPromise }: Args) {
     <article className="pt-16 pb-24">
       <PageClient />
       {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+      <PayloadRedirects disableNotFound locale={locale} url={url} />
 
       {draft && <LivePreviewListener />}
 
       <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
+      <RenderBlocks blocks={layout} locale={locale} />
     </article>
   )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
+  const { locale: localeParam, slug = 'home' } = await paramsPromise
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug({
+    locale,
     slug: decodedSlug,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta({ doc: page, locale, path: slug === 'home' ? '' : `/${slug}` })
 }
 
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPageBySlug = cache(async ({ locale, slug }: { locale: Locale; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -103,6 +103,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     collection: 'pages',
     draft,
     limit: 1,
+    locale,
     pagination: false,
     overrideAccess: draft,
     where: {

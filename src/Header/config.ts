@@ -5,6 +5,7 @@ import { revalidateHeader } from './hooks/revalidateHeader'
 
 export const Header: GlobalConfig = {
   slug: 'header',
+  label: { ar: 'الترويسة', en: 'Header' },
   access: {
     read: () => true,
   },
@@ -12,6 +13,9 @@ export const Header: GlobalConfig = {
     {
       name: 'navItems',
       type: 'array',
+      label: { ar: 'روابط القائمة', en: 'Nav items' },
+      // Each language has its own menu (labels and links)
+      localized: true,
       fields: [
         link({
           appearances: false,

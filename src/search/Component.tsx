@@ -5,15 +5,21 @@ import React, { useState, useEffect } from 'react'
 import { useDebounce } from '@/utilities/useDebounce'
 import { useRouter } from 'next/navigation'
 
+import { localizeHref } from '@/i18n/config'
+import { useDictionary, useLocale } from '@/i18n/LocaleProvider'
+
 export const Search: React.FC = () => {
   const [value, setValue] = useState('')
   const router = useRouter()
+  const locale = useLocale()
+  const { search } = useDictionary()
 
   const debouncedValue = useDebounce(value)
 
   useEffect(() => {
-    router.push(`/search${debouncedValue ? `?q=${debouncedValue}` : ''}`)
-  }, [debouncedValue, router])
+    const query = debouncedValue ? `?q=${encodeURIComponent(debouncedValue)}` : ''
+    router.push(localizeHref(`/search${query}`, locale))
+  }, [debouncedValue, locale, router])
 
   return (
     <div>
@@ -23,17 +29,17 @@ export const Search: React.FC = () => {
         }}
       >
         <Label htmlFor="search" className="sr-only">
-          Search
+          {search.title}
         </Label>
         <Input
           id="search"
           onChange={(event) => {
             setValue(event.target.value)
           }}
-          placeholder="Search"
+          placeholder={search.placeholder}
         />
         <button type="submit" className="sr-only">
-          submit
+          {search.title}
         </button>
       </form>
     </div>

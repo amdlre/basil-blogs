@@ -14,6 +14,7 @@ export const searchFields: Field[] = [
     label: 'Meta',
     type: 'group',
     index: true,
+    localized: true,
     admin: {
       readOnly: true,
     },
@@ -40,6 +41,7 @@ export const searchFields: Field[] = [
     label: 'Categories',
     name: 'categories',
     type: 'array',
+    localized: true,
     admin: {
       readOnly: true,
     },

@@ -4,6 +4,9 @@ import type { Metadata } from 'next/types'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
+import { defaultLocale, isLocale, locales } from '@/i18n/config'
+import { getDictionary } from '@/i18n/dictionaries'
+import { localeAlternates } from '@/utilities/generateMeta'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
@@ -14,12 +17,15 @@ export const revalidate = 600
 
 type Args = {
   params: Promise<{
+    locale: string
     pageNumber: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { pageNumber } = await paramsPromise
+  const { locale: localeParam, pageNumber } = await paramsPromise
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
+  const t = getDictionary(locale)
   const payload = await getPayload({ config: configPromise })
 
   const sanitizedPageNumber = Number(pageNumber)
@@ -30,6 +36,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    locale,
     page: sanitizedPageNumber,
     overrideAccess: false,
   })
@@ -39,17 +46,12 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1>Posts</h1>
+          <h1>{t.posts.title}</h1>
         </div>
       </div>
 
       <div className="container mb-8">
-        <PageRange
-          collection="posts"
-          currentPage={posts.page}
-          limit={12}
-          totalDocs={posts.totalDocs}
-        />
+        <PageRange currentPage={posts.page} limit={12} totalDocs={posts.totalDocs} />
       </div>
 
       <CollectionArchive posts={posts.docs} />
@@ -64,9 +66,13 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { pageNumber } = await paramsPromise
+  const { locale: localeParam, pageNumber } = await paramsPromise
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
+  const t = getDictionary(locale)
+
   return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
+    alternates: localeAlternates(locale, `/posts/page/${pageNumber}`),
+    title: `${t.posts.title} (${pageNumber}) | ${t.siteName}`,
   }
 }
 
@@ -81,10 +87,10 @@ export async function generateStaticParams() {
 
   const totalPages = Math.ceil(totalDocs / 10)
 
-  const pages: { pageNumber: string }[] = []
+  const pages: { locale: string; pageNumber: string }[] = []
 
   for (let i = 1; i <= totalPages; i++) {
-    pages.push({ pageNumber: String(i) })
+    for (const locale of locales) pages.push({ locale, pageNumber: String(i) })
   }
 
   return pages

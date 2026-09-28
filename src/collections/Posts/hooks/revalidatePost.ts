@@ -1,6 +1,8 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidateTag } from 'next/cache'
+
+import { revalidateLocalizedPath } from '@/i18n/revalidate'
 
 import type { Post } from '../../../payload-types'
 
@@ -15,7 +17,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       payload.logger.info(`Revalidating post at path: ${path}`)
 
-      revalidatePath(path)
+      revalidateLocalizedPath(path)
       revalidateTag('posts-sitemap', 'max')
     }
 
@@ -25,7 +27,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       payload.logger.info(`Revalidating old post at path: ${oldPath}`)
 
-      revalidatePath(oldPath)
+      revalidateLocalizedPath(oldPath)
       revalidateTag('posts-sitemap', 'max')
     }
   }
@@ -36,7 +38,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { 
   if (!context.disableRevalidate) {
     const path = `/posts/${doc?.slug}`
 
-    revalidatePath(path)
+    revalidateLocalizedPath(path)
     revalidateTag('posts-sitemap', 'max')
   }
 

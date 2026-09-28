@@ -108,7 +108,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('ar' | 'en') | ('ar' | 'en')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -117,7 +117,7 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'ar' | 'en';
   widgets: {
     welcome: WelcomeWidget;
     stats: StatsWidget;
@@ -204,6 +204,11 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    mediaPerLocale?: boolean | null;
+    /**
+     * Switch the language at the top of the page to set an image per language. Leave empty to use the shared image.
+     */
+    mediaLocalized?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -212,6 +217,11 @@ export interface Page {
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
     image?: (number | null) | Media;
+    imagePerLocale?: boolean | null;
+    /**
+     * Switch the language at the top of the page to set an image per language. Leave empty to use the shared image.
+     */
+    imageLocalized?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -232,6 +242,11 @@ export interface Post {
   id: number;
   title: string;
   heroImage?: (number | null) | Media;
+  heroImagePerLocale?: boolean | null;
+  /**
+   * Switch the language at the top of the page to set an image per language. Leave empty to use the shared image.
+   */
+  heroImageLocalized?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -255,6 +270,11 @@ export interface Post {
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
     image?: (number | null) | Media;
+    imagePerLocale?: boolean | null;
+    /**
+     * Switch the language at the top of the page to set an image per language. Leave empty to use the shared image.
+     */
+    imageLocalized?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -1076,6 +1096,8 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        mediaPerLocale?: T;
+        mediaLocalized?: T;
       };
   layout?:
     | T
@@ -1091,6 +1113,8 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         title?: T;
         image?: T;
+        imagePerLocale?: T;
+        imageLocalized?: T;
         description?: T;
       };
   publishedAt?: T;
@@ -1191,6 +1215,8 @@ export interface FormBlockSelect<T extends boolean = true> {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
+  heroImagePerLocale?: T;
+  heroImageLocalized?: T;
   content?: T;
   relatedPosts?: T;
   categories?: T;
@@ -1199,6 +1225,8 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         title?: T;
         image?: T;
+        imagePerLocale?: T;
+        imageLocalized?: T;
         description?: T;
       };
   publishedAt?: T;
