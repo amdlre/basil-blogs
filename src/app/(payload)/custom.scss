@@ -246,3 +246,48 @@ $nav-icon-default: "<circle cx='12' cy='12' r='3'/>";
     background: var(--theme-elevation-50);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard collection cards (Payload's built-in `collections` widget): reuse the
+// sidebar icons. Cards have ids `card-<slug>`, so `nav-pages` -> `card-pages`,
+// `nav-global-header` -> `card-header`.
+
+.collections__card-list .card {
+  border-radius: 12px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .card__title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 14px;
+
+    &::before {
+      content: '';
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background-color: var(--theme-elevation-500);
+      mask: var(--card-icon, #{nav-icon($nav-icon-default)}) center / contain no-repeat;
+      -webkit-mask: var(--card-icon, #{nav-icon($nav-icon-default)}) center / contain no-repeat;
+    }
+  }
+}
+
+@each $id, $paths in $nav-icons {
+  $slug: str-slice($id, 5);
+  @if str-index($slug, 'global-') == 1 {
+    $slug: str-slice($slug, 8);
+  }
+
+  #card-#{$slug} {
+    --card-icon: #{nav-icon($paths)};
+  }
+}

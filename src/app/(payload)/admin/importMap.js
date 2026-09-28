@@ -24,8 +24,11 @@ import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from 
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
 import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
-import { default as default_1a7510af427896d367a49dbf838d2de6 } from '@/components/BeforeDashboard'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
+import { WelcomeWidget as WelcomeWidget_6449e2b4cdf0ca2e538fca7f21b72444 } from '@/components/Dashboard/WelcomeWidget'
+import { StatsWidget as StatsWidget_89d620f910f30a15731181879546e90b } from '@/components/Dashboard/StatsWidget'
+import { RecentPostsWidget as RecentPostsWidget_97ba54b7333f6034442c83b3f68bfee2 } from '@/components/Dashboard/RecentPostsWidget'
+import { RecentSubmissionsWidget as RecentSubmissionsWidget_674a9c22c995741b9c9160381967c7a3 } from '@/components/Dashboard/RecentSubmissionsWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -56,7 +59,10 @@ export const importMap = {
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
-  "@/components/BeforeDashboard#default": default_1a7510af427896d367a49dbf838d2de6,
   "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
+  "@/components/Dashboard/WelcomeWidget#WelcomeWidget": WelcomeWidget_6449e2b4cdf0ca2e538fca7f21b72444,
+  "@/components/Dashboard/StatsWidget#StatsWidget": StatsWidget_89d620f910f30a15731181879546e90b,
+  "@/components/Dashboard/RecentPostsWidget#RecentPostsWidget": RecentPostsWidget_97ba54b7333f6034442c83b3f68bfee2,
+  "@/components/Dashboard/RecentSubmissionsWidget#RecentSubmissionsWidget": RecentSubmissionsWidget_674a9c22c995741b9c9160381967c7a3,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -25,9 +25,42 @@ export default buildConfig({
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
-      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
-      beforeDashboard: ['@/components/BeforeDashboard'],
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'welcome',
+          Component: '@/components/Dashboard/WelcomeWidget#WelcomeWidget',
+          label: 'Welcome',
+          minWidth: 'medium',
+        },
+        {
+          slug: 'stats',
+          Component: '@/components/Dashboard/StatsWidget#StatsWidget',
+          label: 'Statistics',
+          minWidth: 'medium',
+        },
+        {
+          slug: 'recent-posts',
+          Component: '@/components/Dashboard/RecentPostsWidget#RecentPostsWidget',
+          label: 'Recent posts',
+          minWidth: 'small',
+        },
+        {
+          slug: 'recent-submissions',
+          Component: '@/components/Dashboard/RecentSubmissionsWidget#RecentSubmissionsWidget',
+          label: 'Latest form submissions',
+          minWidth: 'small',
+        },
+      ],
+      // `collections` is Payload's built-in widget with a card per collection
+      defaultLayout: [
+        { widgetSlug: 'welcome', width: 'full' },
+        { widgetSlug: 'stats', width: 'full' },
+        { widgetSlug: 'recent-posts', width: 'medium' },
+        { widgetSlug: 'recent-submissions', width: 'medium' },
+        { widgetSlug: 'collections', width: 'full' },
+      ],
     },
     importMap: {
       baseDir: path.resolve(dirname),
