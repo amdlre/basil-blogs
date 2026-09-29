@@ -1,7 +1,6 @@
 import type { CollectionConfig, UploadField } from 'payload'
 
-import { authenticated } from '../../access/authenticated'
-import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { can, canReadOrPublished } from '../../access/rbac'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
@@ -29,10 +28,11 @@ export const Pages: CollectionConfig<'pages'> = {
     plural: { ar: 'الصفحات', en: 'Pages' },
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
+    create: can('pages', 'create'),
+    delete: can('pages', 'delete'),
+    // The public site sees published documents; roles with read access also see drafts
+    read: canReadOrPublished('pages'),
+    update: can('pages', 'update'),
   },
   // This config controls what's populated by default when a page is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property

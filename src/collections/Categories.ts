@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { can } from '../access/rbac'
 import { slugField } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -11,10 +11,11 @@ export const Categories: CollectionConfig = {
     plural: { ar: 'التصنيفات', en: 'Categories' },
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: can('categories', 'create'),
+    delete: can('categories', 'delete'),
+    // Public: used by the website
     read: anyone,
-    update: authenticated,
+    update: can('categories', 'update'),
   },
   admin: {
     useAsTitle: 'title',

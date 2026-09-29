@@ -9,7 +9,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { can } from '../access/rbac'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,10 +22,11 @@ export const Media: CollectionConfig = {
   },
   folders: true,
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: can('media', 'create'),
+    delete: can('media', 'delete'),
+    // Public: used by the website
     read: anyone,
-    update: authenticated,
+    update: can('media', 'update'),
   },
   fields: [
     {

@@ -1,13 +1,16 @@
 import type { GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
+import { can } from '@/access/rbac'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
   label: { ar: 'التذييل', en: 'Footer' },
   access: {
+    // Public: rendered on every page of the website
     read: () => true,
+    update: can('footer', 'update'),
   },
   fields: [
     {

@@ -1,0 +1,109 @@
+.permissions-field {
+  &__presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+
+    button {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--theme-elevation-150);
+      border-radius: 999px;
+      background: var(--theme-elevation-0);
+      color: var(--theme-elevation-800);
+      font-size: 13px;
+      cursor: pointer;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+
+      &:hover {
+        background: var(--theme-elevation-50);
+        border-color: var(--theme-elevation-300);
+      }
+    }
+  }
+
+  &__scroll {
+    overflow-x: auto;
+    border: 1px solid var(--theme-elevation-100);
+    border-radius: 12px;
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--theme-elevation-100);
+      text-align: center;
+    }
+
+    thead th {
+      background: var(--theme-elevation-50);
+      color: var(--theme-elevation-600);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+
+      &:first-child {
+        text-align: start;
+      }
+    }
+
+    tbody th {
+      font-weight: 500;
+      text-align: start;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child {
+      th,
+      td {
+        border-bottom: none;
+      }
+    }
+
+    tbody tr:hover {
+      background: var(--theme-elevation-50);
+    }
+
+    input[type='checkbox'] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--theme-success-500, #10b981);
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__head {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+  }
+
+  &__tag {
+    margin-inline-start: 0.5rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  &__na {
+    color: var(--theme-elevation-300);
+  }
+}

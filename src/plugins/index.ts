@@ -5,6 +5,7 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { Plugin } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
+import { can } from '@/access/rbac'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
@@ -32,6 +33,12 @@ export const plugins: Plugin[] = [
   redirectsPlugin({
     collections: ['pages', 'posts'],
     overrides: {
+      access: {
+        create: can('redirects', 'create'),
+        delete: can('redirects', 'delete'),
+        read: can('redirects', 'read'),
+        update: can('redirects', 'update'),
+      },
       labels: {
         singular: { ar: 'تحويل', en: 'Redirect' },
         plural: { ar: 'التحويلات', en: 'Redirects' },
@@ -68,6 +75,13 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      access: {
+        create: can('forms', 'create'),
+        delete: can('forms', 'delete'),
+        // Public: forms are embedded in pages on the website
+        read: () => true,
+        update: can('forms', 'update'),
+      },
       labels: {
         singular: { ar: 'نموذج', en: 'Form' },
         plural: { ar: 'النماذج', en: 'Forms' },
@@ -93,6 +107,13 @@ export const plugins: Plugin[] = [
       },
     },
     formSubmissionOverrides: {
+      access: {
+        // Public: visitors submit forms on the website
+        create: () => true,
+        delete: can('form-submissions', 'delete'),
+        read: can('form-submissions', 'read'),
+        update: can('form-submissions', 'update'),
+      },
       labels: {
         singular: { ar: 'رد نموذج', en: 'Form Submission' },
         plural: { ar: 'ردود النماذج', en: 'Form Submissions' },
@@ -105,6 +126,12 @@ export const plugins: Plugin[] = [
     localize: true,
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
+      access: {
+        create: can('search', 'create'),
+        delete: can('search', 'delete'),
+        read: can('search', 'read'),
+        update: can('search', 'update'),
+      },
       labels: {
         singular: { ar: 'نتيجة بحث', en: 'Search Result' },
         plural: { ar: 'نتائج البحث', en: 'Search Results' },

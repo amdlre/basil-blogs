@@ -2,6 +2,8 @@ import type { WidgetServerProps } from 'payload'
 
 import React from 'react'
 
+import { userCan } from '@/access/rbac'
+import type { ResourceSlug } from '@/access/permissions'
 import { adminT, type AdminTranslationKey } from '@/i18n/admin'
 
 import { Icon, type IconName } from './Icon'
@@ -19,20 +21,37 @@ export const WelcomeWidget: React.FC<WidgetServerProps> = ({ req, user }) => {
   const now = new Date()
   const name = (user && 'name' in user && typeof user.name === 'string' && user.name) || user?.email
 
-  const actions: { href: string; icon: IconName; label: string; primary?: boolean }[] = [
+  const role = user && typeof user.role === 'object' ? user.role : null
+
+  // Quick actions, shown only when the user's role can create that kind of content
+  const quickActions: {
+    href: string
+    icon: IconName
+    label: string
+    primary?: boolean
+    resource: ResourceSlug
+  }[] = [
     {
       href: `${adminRoute}/collections/posts/create`,
       icon: 'plus',
       label: adminT(i18n, 'newPost'),
       primary: true,
+      resource: 'posts',
     },
-    { href: `${adminRoute}/collections/pages/create`, icon: 'pages', label: adminT(i18n, 'newPage') },
+    {
+      href: `${adminRoute}/collections/pages/create`,
+      icon: 'pages',
+      label: adminT(i18n, 'newPage'),
+      resource: 'pages',
+    },
     {
       href: `${adminRoute}/collections/media/create`,
       icon: 'upload',
       label: adminT(i18n, 'uploadMedia'),
+      resource: 'media',
     },
   ]
+  const actions = quickActions.filter((action) => userCan(user, action.resource, 'create'))
 
   return (
     <section className="dash-welcome">
@@ -49,6 +68,12 @@ export const WelcomeWidget: React.FC<WidgetServerProps> = ({ req, user }) => {
           {name ? `${i18n.language === 'ar' ? '،' : ','} ${name}` : ''} 👋
         </h2>
         <p className="dash-welcome__subtitle">{adminT(i18n, 'dashboardSubtitle')}</p>
+        {role?.name && (
+          <p className="dash-welcome__role">
+            <Icon name="shield" size={14} />
+            {adminT(i18n, 'yourRole')}: <strong>{role.name}</strong>
+          </p>
+        )}
       </div>
 
       <div className="dash-welcome__actions">
