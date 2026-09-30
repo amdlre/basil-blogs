@@ -1,23 +1,56 @@
 'use client'
 
-import { useTranslation } from '@payloadcms/ui'
-import React from 'react'
+import { useConfig, useLocale, useTranslation } from '@payloadcms/ui'
+import React, { useEffect, useState } from 'react'
 
 import { adminT } from '@/i18n/admin'
 
 import './index.scss'
 
-/** Globe button in the admin header that flips the admin UI between Arabic and English */
+/** Current admin URL with the content locale set to `locale` */
+const urlWithLocale = (locale: string) => {
+  const url = new URL(window.location.href)
+  url.searchParams.set('locale', locale)
+  return url.toString()
+}
+
+/**
+ * The single language switch of the admin panel (Payload's own "Locale" selector is hidden
+ * in index.scss). It keeps the admin UI language and the content language being edited in sync.
+ *
+ * Switching sets Payload's language cookie and loads the new URL in one navigation, so the
+ * UI language and `?locale=` always change together (no refresh racing a client navigation).
+ */
 export const AdminLanguageToggle: React.FC = () => {
-  const { i18n, switchLanguage } = useTranslation()
-  const next = i18n.language === 'ar' ? 'en' : 'ar'
+  const { i18n } = useTranslation()
+  const locale = useLocale()
+  const { config } = useConfig()
+  const [isSwitching, setIsSwitching] = useState(false)
+
+  const current = i18n.language === 'en' ? 'en' : 'ar'
+  const next = current === 'ar' ? 'en' : 'ar'
+  const cookieName = `${config.cookiePrefix || 'payload'}-lng`
+
+  // Content locale follows the UI language (e.g. after changing language in account settings)
+  useEffect(() => {
+    if (locale?.code && locale.code !== current) {
+      window.location.replace(urlWithLocale(current))
+    }
+  }, [current, locale?.code])
+
+  const switchLanguage = () => {
+    setIsSwitching(true)
+    document.cookie = `${cookieName}=${next}; path=/; max-age=31536000; samesite=lax`
+    window.location.assign(urlWithLocale(next))
+  }
 
   return (
     <button
       aria-label={adminT(i18n, 'switchLanguageLabel')}
       className="admin-language-toggle"
+      disabled={isSwitching}
       lang={next}
-      onClick={() => void switchLanguage?.(next)}
+      onClick={switchLanguage}
       title={adminT(i18n, 'switchLanguageLabel')}
       type="button"
     >

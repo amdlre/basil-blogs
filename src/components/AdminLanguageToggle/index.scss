@@ -25,3 +25,21 @@
     outline-offset: 2px;
   }
 }
+
+.admin-language-toggle:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+// The toggle above is the only language switch: hide Payload's built-in "Locale" selector
+// and the invisible placeholder that reserves its width (it left a big gap before the avatar)
+.app-header .localizer,
+.app-header__localizer-spacing {
+  display: none;
+}
+
+// Keep the toggle right next to the account avatar, with a small gap (works in LTR and RTL)
+.app-header__actions-wrapper {
+  margin-right: 0;
+  margin-inline-end: 0.625rem;
+}

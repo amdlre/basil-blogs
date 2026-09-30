@@ -101,8 +101,9 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
-    // Run pending migrations automatically when the production server starts
-    prodMigrations: migrations,
+    // Run pending migrations automatically when the production server starts — not during
+    // `next build`, where every build worker would try to migrate (and could block on prompts)
+    prodMigrations: process.env.NEXT_PHASE === 'phase-production-build' ? undefined : migrations,
   }),
   // Admin UI language (labels, buttons…). Arabic is the default; switch from the header toggle.
   i18n: {
